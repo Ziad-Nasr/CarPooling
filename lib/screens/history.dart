@@ -72,26 +72,26 @@ class _historyState extends State<history> with TickerProviderStateMixin {
                   Expanded(
                     child: TabBarView(children: [
                       FutureBuilder(
-                        future: getDocs("completed"),
-                        builder: (context, snapshot) {
-                          return Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ListView.builder(
-                              itemCount: docIDS.length,
-                              itemBuilder: (context, index) {
-                                return routeCard(
-                                  cardType: "Reserved",
-                                  Header: "Title",
-                                  Details: "Trip Details",
-                                  Reserve: "Rate",
-                                  Collection: "completed",
-                                  docID: docIDS[index],
-                                ); // Assuming routeCard is the widget you want to display for each item
-                              },
-                            ),
-                          );
-                        }
-                      ),
+                          future: getDocs("completed"),
+                          builder: (context, snapshot) {
+                            return Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: ListView.builder(
+                                itemCount: docIDS.length,
+                                itemBuilder: (context, index) {
+                                  return routeCard(
+                                    cardType: "Reserved",
+                                    Header: "Title",
+                                    Details: "Trip Details",
+                                    Reserve: "Rate",
+                                    Collection: "completed",
+                                    docID: docIDS[index],
+                                    onPressed: () {},
+                                  ); // Assuming routeCard is the widget you want to display for each item
+                                },
+                              ),
+                            );
+                          }),
                       Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: ListView.builder(
@@ -104,6 +104,7 @@ class _historyState extends State<history> with TickerProviderStateMixin {
                               Reserve: "Report",
                               Collection: "",
                               docID: docIDS[index],
+                              onPressed: () {},
                             );
                           },
                         ),

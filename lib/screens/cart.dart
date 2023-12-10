@@ -62,6 +62,7 @@ class _cartState extends State<cart> {
                             Reserve: "Reserve",
                             Collection: "cart",
                             docID: docIDS[index],
+                            onPressed: () {},
                           );
                         },
                       ),

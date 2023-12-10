@@ -8,6 +8,7 @@ class routeCard extends StatefulWidget {
   final String cardType;
   final String docID;
   final String Collection;
+  final Function onPressed;
 
   const routeCard({
     super.key,
@@ -17,6 +18,7 @@ class routeCard extends StatefulWidget {
     required this.cardType,
     required this.docID,
     required this.Collection,
+    required this.onPressed,
   });
 
   @override
@@ -112,7 +114,9 @@ class _routeCardState extends State<routeCard> {
                   documentData?['reserve'],
                   style: TextStyle(color: Colors.black),
                 ),
-                onPressed: () {/* ... */},
+                onPressed: () {
+                  widget.onPressed();
+                },
               ),
               const SizedBox(width: 4),
               const SizedBox(width: 4),
