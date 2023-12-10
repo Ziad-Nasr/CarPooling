@@ -25,6 +25,7 @@ class routeCard extends StatefulWidget {
 
 class _routeCardState extends State<routeCard> {
   Map<String, dynamic>? documentData;
+  bool locked = false;
   Future<Map<String, dynamic>> getDocumentData(
       String collectionName, String documentId) async {
     try {
@@ -99,6 +100,10 @@ class _routeCardState extends State<routeCard> {
             "To: " + documentData?['to'],
             style: TextStyle(color: Colors.grey),
           ),
+          Text(
+            "Number of Seats: " + (documentData?['seats']).toString(),
+            style: TextStyle(color: Colors.grey),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
@@ -110,13 +115,6 @@ class _routeCardState extends State<routeCard> {
                 onPressed: () {/* ... */},
               ),
               const SizedBox(width: 4),
-              TextButton(
-                child: const Text(
-                  "details",
-                  style: TextStyle(color: Colors.black),
-                ),
-                onPressed: () {/* ... */},
-              ),
               const SizedBox(width: 4),
             ],
           ),

@@ -10,7 +10,6 @@ class Landing extends StatefulWidget {
 }
 
 class _LandingState extends State<Landing> {
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
   void signUserOut() {
     FirebaseAuth.instance.signOut();
   }
@@ -18,15 +17,18 @@ class _LandingState extends State<Landing> {
   List<String> docIDS = [];
 
   Future getDocs() async {
-    // QuerySnapshot querySnapshot =
-    await FirebaseFirestore.instance
-        .collection("routes")
-        .get()
-        .then((snapshot) => {
-              snapshot.docs.forEach((doc) {
-                docIDS.add(doc.reference.id);
-              })
-            });
+    User? user = FirebaseAuth.instance.currentUser;
+    print("user");
+    print(user?.email);
+    print("user");
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection("routes").get();
+    final docs = querySnapshot.docs;
+    final filteredDocs = docs.where((doc) {
+      final riders = doc["riders"];
+      return !riders.contains(user?.email);
+    });
+    docIDS = filteredDocs.map((doc) => doc.id).toList();
   }
 
   @override
