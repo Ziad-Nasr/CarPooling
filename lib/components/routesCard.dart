@@ -111,7 +111,7 @@ class _routeCardState extends State<routeCard> {
             children: <Widget>[
               TextButton(
                 child: Text(
-                  documentData?['reserve'],
+                  widget.Reserve,
                   style: TextStyle(color: Colors.black),
                 ),
                 onPressed: () {

@@ -23,7 +23,8 @@ class _LandingState extends State<Landing> {
     final docs = querySnapshot.docs;
     final filteredDocs = docs.where((doc) {
       final riders = doc["riders"];
-      return !riders.contains(user?.email);
+      final seats = doc["seats"];
+      return (!riders.contains(user?.email) && seats > 0);
     });
     docIDS = filteredDocs.map((doc) => doc.id).toList();
   }
@@ -66,7 +67,7 @@ class _LandingState extends State<Landing> {
                             Header: "Header",
                             Collection: "routes",
                             docID: docIDS[index],
-                            Reserve: docIDS[index],
+                            Reserve: "Reserve",
                             onPressed: () {
                               addUserToRoute(docIDS[index]);
                             },

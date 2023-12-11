@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:project/components/routesCard.dart';
 import 'package:project/components/blackButtonRound.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class cart extends StatefulWidget {
   const cart({super.key});
@@ -14,15 +15,30 @@ class _cartState extends State<cart> {
   List<String> docIDS = [];
 
   Future getDocs() async {
-    // QuerySnapshot querySnapshot =
-    await FirebaseFirestore.instance
-        .collection("routes")
-        .get()
-        .then((snapshot) => {
-              snapshot.docs.forEach((doc) {
-                docIDS.add(doc.reference.id);
-              })
-            });
+    User? user = FirebaseAuth.instance.currentUser;
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection("routes").get();
+    final docs = querySnapshot.docs;
+    final filteredDocs = docs.where((doc) {
+      final riders = doc["riders"];
+      return riders.contains(user?.email);
+    });
+    docIDS = filteredDocs.map((doc) => doc.id).toList();
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void removeUserFromRoute(String docuID) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    DocumentReference documentReference =
+        await FirebaseFirestore.instance.collection("routes").doc(docuID);
+
+    documentReference.update({
+      "riders": FieldValue.arrayRemove([user?.email])
+    });
+    documentReference.update({"seats": FieldValue.increment(1)});
+    getDocs();
   }
 
   @override
@@ -36,7 +52,7 @@ class _cartState extends State<cart> {
       body: FutureBuilder(
           future: getDocs(),
           builder: (context, snapshot) {
-            return Center(
+            return Container(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -59,10 +75,12 @@ class _cartState extends State<cart> {
                             cardType: "Reserved",
                             Header: "Title",
                             Details: "Trip Details",
-                            Reserve: "Reserve",
-                            Collection: "cart",
+                            Reserve: "Remove",
+                            Collection: "routes",
                             docID: docIDS[index],
-                            onPressed: () {},
+                            onPressed: () {
+                              removeUserFromRoute(docIDS[index]);
+                            },
                           );
                         },
                       ),
