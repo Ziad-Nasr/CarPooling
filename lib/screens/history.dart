@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project/components/routesCard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class history extends StatefulWidget {
   const history({super.key});
@@ -12,16 +13,17 @@ class history extends StatefulWidget {
 class _historyState extends State<history> with TickerProviderStateMixin {
   List<String> docIDS = [];
 
-  Future getDocs(collection) async {
-    // QuerySnapshot querySnapshot =
-    await FirebaseFirestore.instance
-        .collection(collection)
-        .get()
-        .then((snapshot) => {
-              snapshot.docs.forEach((doc) {
-                docIDS.add(doc.reference.id);
-              })
-            });
+  Future getDocs() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection("routes").get();
+    final docs = querySnapshot.docs;
+    final filteredDocs = docs.where((doc) {
+      final riders = doc["riders"];
+      final state = doc["state"];
+      return (riders.contains(user?.email) && state == "complete");
+    });
+    docIDS = filteredDocs.map((doc) => doc.id).toList();
   }
 
   @override
@@ -55,24 +57,18 @@ class _historyState extends State<history> with TickerProviderStateMixin {
               ),
               body: Column(
                 children: [
-                  TabBar(
-                    tabs: [
-                      Tab(
-                          child: Text(
-                        "Completed",
-                        style: TextStyle(color: Colors.black),
-                      )),
-                      Tab(
-                          child: Text(
-                        "Canceled",
-                        style: TextStyle(color: Colors.black),
-                      )),
-                    ],
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Completed",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w500),
                   ),
                   Expanded(
                     child: TabBarView(children: [
                       FutureBuilder(
-                          future: getDocs("completed"),
+                          future: getDocs(),
                           builder: (context, snapshot) {
                             return Padding(
                               padding: const EdgeInsets.all(10.0),
@@ -83,8 +79,8 @@ class _historyState extends State<history> with TickerProviderStateMixin {
                                     cardType: "Reserved",
                                     Header: "Title",
                                     Details: "Trip Details",
-                                    Reserve: "Rate",
-                                    Collection: "completed",
+                                    Reserve: "",
+                                    Collection: "routes",
                                     docID: docIDS[index],
                                     onPressed: () {},
                                   ); // Assuming routeCard is the widget you want to display for each item

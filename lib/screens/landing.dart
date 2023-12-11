@@ -24,7 +24,10 @@ class _LandingState extends State<Landing> {
     final filteredDocs = docs.where((doc) {
       final riders = doc["riders"];
       final seats = doc["seats"];
-      return (!riders.contains(user?.email) && seats > 0);
+      final state = doc["state"];
+      return (!riders.contains(user?.email) &&
+          seats > 0 &&
+          state == "available");
     });
     docIDS = filteredDocs.map((doc) => doc.id).toList();
   }

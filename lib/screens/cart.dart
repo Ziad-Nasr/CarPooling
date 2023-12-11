@@ -21,7 +21,8 @@ class _cartState extends State<cart> {
     final docs = querySnapshot.docs;
     final filteredDocs = docs.where((doc) {
       final riders = doc["riders"];
-      return riders.contains(user?.email);
+      final state = doc["state"];
+      return (riders.contains(user?.email) && state != "complete");
     });
     docIDS = filteredDocs.map((doc) => doc.id).toList();
     if (mounted) {
