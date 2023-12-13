@@ -1,0 +1,24 @@
+.inputField {
+  width: 100%;
+  height: 40px;
+  border-radius: 5px;
+  padding: 0 10px;
+  font-size: 16px;
+  outline: none;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  transition: all 0.3s ease-in-out;
+}
+
+.formLabel {
+  width: 100%;
+  height: 20px;
+  /* border: 1px solid #ccc; */
+  border-radius: 5px;
+  padding: 20px 10px;
+  font-size: 20px;
+  outline: none;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  transition: all 0.3s ease-in-out;
+}
