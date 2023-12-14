@@ -1,30 +1,31 @@
 import React, { useState } from "react";
-import "./login.css";
+import "./signup.css";
 import InputField from "../../InputFeild/InputField";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import CarPool from "../../assets/CarPool.png";
 import { auth } from "../../firebaseConfig";
 import { NavLink, useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
-export default function Login() {
+export default function Signup() {
   const navigate = useNavigate();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        toast.success("Logged in successfully");
         const user = userCredential.user;
-        navigate("/landing");
+        toast.success("Account created successfully");
+        navigate("/login");
         console.log(user);
       })
       .catch((error) => {
-        toast.error("Wrong email or password");
+        toast.error("Something went wrong, please try again");
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode);
@@ -39,6 +40,12 @@ export default function Login() {
       <h2 className="subtitle">Driver View</h2>
       <form onSubmit={handleSubmit} className="form">
         <div className="inputs">
+          <InputField
+            label="Name"
+            type="name"
+            placeholder="Ziad Nasr"
+            setValue={(e) => setName(e.target.value)}
+          />
           <InputField
             label="E-mail"
             type="email"
@@ -61,12 +68,12 @@ export default function Login() {
           </div>
         </div>
         <button type="submit" className="login">
-          Log In
+          Sign Up
         </button>
         <p className="NewAcc">
-          Don't have an account?{" "}
+          Already signed up?
           <a className="signUp">
-            <Link to="/signup">Sign up</Link>
+            <Link to="/signup"> Log in</Link>
           </a>
           .
         </p>
