@@ -33,20 +33,64 @@ class _LandingState extends State<Landing> {
     docIDS = filteredDocs.map((doc) => doc.id).toList();
   }
 
-  void addUserToRoute(String docuID) {
+  void addUserToRoute(String docuID) async {
     User? user = FirebaseAuth.instance.currentUser;
     DocumentReference documentReference =
         FirebaseFirestore.instance.collection("routes").doc(docuID);
     documentReference.update({
       "riders": FieldValue.arrayUnion([user?.email])
     });
-    documentReference.update({"seats": FieldValue.increment(-1)});
-    Navigator.pushReplacement<void, void>(
-      context,
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => navBar(),
-      ),
-    );
+    try {
+      // Retrieve the document
+      DocumentSnapshot documentSnapshot = await documentReference.get();
+
+      // Check if the document exists and has data
+      if (documentSnapshot.exists && documentSnapshot.data() != null) {
+        // Document data as Map
+        Map<String, dynamic> documentData =
+            documentSnapshot.data() as Map<String, dynamic>;
+
+        // You can use documentData here if needed
+        // For example: print(documentData['someFieldName']);
+
+        // Update riders and seats
+        documentReference.update({
+          "riders": FieldValue.arrayUnion([user?.email])
+        });
+        documentReference.update({"seats": FieldValue.increment(-1)});
+
+        CollectionReference requests =
+            FirebaseFirestore.instance.collection('requests');
+        await requests.add({
+          'docID': docuID,
+          'driver': documentData[
+              'driver'], // Assuming 'driver' is a field in the document
+          'user': user?.email ?? 'Unknown user',
+          'from': documentData['from'],
+          'to': documentData['to'],
+          'time': documentData['time'],
+          'seats': documentData['seats'] - 1,
+          'state': "requested",
+          'title': documentData['title'],
+          'name': user?.displayName ?? 'Unknown user',
+          // Fallback to 'Unknown user' if email is null
+        });
+
+        // Navigate to navBar
+        Navigator.pushReplacement<void, void>(
+          context,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) => navBar(),
+          ),
+        );
+      } else {
+        print("Document does not exist or is empty");
+        // Handle the case where the document doesn't exist or is empty
+      }
+    } catch (e) {
+      print("Error retrieving document: $e");
+      // Handle any errors
+    }
   }
 
   @override
