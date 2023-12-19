@@ -31,10 +31,10 @@ class _cartState extends State<cart> {
     }
   }
 
-  void removeUserFromRoute(String docuID) async {
+  void removeUserFromRoute(String docuID) {
     User? user = FirebaseAuth.instance.currentUser;
     DocumentReference documentReference =
-        await FirebaseFirestore.instance.collection("routes").doc(docuID);
+        FirebaseFirestore.instance.collection("routes").doc(docuID);
 
     documentReference.update({
       "riders": FieldValue.arrayRemove([user?.email])
