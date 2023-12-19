@@ -27,8 +27,25 @@ class routeCard extends StatefulWidget {
 
 class _routeCardState extends State<routeCard> {
   Map<String, dynamic>? documentData;
-  bool locked = false;
-  Future<Map<String, dynamic>> getDocumentData(
+  bool isLoading = true;
+  String error = '';
+  @override
+  void initState() {
+    _fetchDocumentData();
+    super.initState();
+  }
+
+  Future<void> _fetchDocumentData() async {
+    try {
+      documentData = await _getDocumentData(widget.Collection, widget.docID);
+    } catch (e) {
+      error = 'Error fetching data: $e';
+    }
+    isLoading = false;
+    setState(() {}); // Trigger a rebuild
+  }
+
+  Future<Map<String, dynamic>> _getDocumentData(
       String collectionName, String documentId) async {
     try {
       // Reference to the Firestore collection
@@ -58,19 +75,12 @@ class _routeCardState extends State<routeCard> {
   }
 
   @override
-  void initState() {
-    _fetchDocumentData();
-    super.initState();
-  }
-
-  Future<void> _fetchDocumentData() async {
-    documentData = await getDocumentData(widget.Collection, widget.docID);
-    setState(() {}); // Trigger a rebuild after fetching data
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (documentData == null) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (error.isNotEmpty) {
+      return Center(child: Text(error));
+    } else if (documentData == null) {
       return const Center(child: CircularProgressIndicator());
     }
     return Card(

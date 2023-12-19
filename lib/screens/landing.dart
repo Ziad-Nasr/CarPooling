@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:project/components/navBar.dart';
 import 'package:project/components/routesCard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -40,7 +41,12 @@ class _LandingState extends State<Landing> {
       "riders": FieldValue.arrayUnion([user?.email])
     });
     documentReference.update({"seats": FieldValue.increment(-1)});
-    setState(() {});
+    Navigator.pushReplacement<void, void>(
+      context,
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) => navBar(),
+      ),
+    );
   }
 
   @override

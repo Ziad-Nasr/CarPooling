@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project/components/navBar.dart';
 import 'package:project/components/routesCard.dart';
 import 'package:project/components/blackButtonRound.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,7 +40,12 @@ class _cartState extends State<cart> {
       "riders": FieldValue.arrayRemove([user?.email])
     });
     documentReference.update({"seats": FieldValue.increment(1)});
-    getDocs();
+    Navigator.pushReplacement<void, void>(
+      context,
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) => navBar(current: 1),
+      ),
+    );
   }
 
   @override

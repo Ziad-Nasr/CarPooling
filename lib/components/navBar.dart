@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:project/screens/profile.dart';
 
 class navBar extends StatefulWidget {
+  final int? current;
+  const navBar({super.key, this.current});
   @override
   _navBarState createState() => _navBarState();
 }
 
 class _navBarState extends State<navBar> {
-  int SelectedIdx = 0;
+  late int SelectedIdx = widget.current ?? 0;
   List<Widget> myWidgets = [Landing(), cart(), profile()];
   @override
   Widget build(BuildContext context) {
