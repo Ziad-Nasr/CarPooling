@@ -116,6 +116,14 @@ class _routeCardState extends State<routeCard> {
             "Number of Seats: " + (documentData?['seats']).toString(),
             style: TextStyle(color: Colors.grey),
           ),
+          Text(
+            "Date: " + (documentData?['date']).toString(),
+            style: TextStyle(color: Colors.grey),
+          ),
+          Text(
+            "Time: " + (documentData?['time']).toString(),
+            style: TextStyle(color: Colors.grey),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[

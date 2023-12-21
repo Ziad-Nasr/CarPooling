@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:project/components/navBar.dart';
 import 'package:project/components/routesCard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 
 class Landing extends StatefulWidget {
   const Landing({Key? key}) : super(key: key);
@@ -18,6 +19,8 @@ class _LandingState extends State<Landing> {
   List<String> docIDS = [];
 
   Future getDocs() async {
+    DateTime now = DateTime.now();
+    print(now.hour);
     User? user = FirebaseAuth.instance.currentUser;
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection("routes").get();
@@ -26,11 +29,26 @@ class _LandingState extends State<Landing> {
       final riders = doc["riders"];
       final seats = doc["seats"];
       final state = doc["state"];
+      final firestoreTime = (doc["test"] as Timestamp)
+          .toDate(); // Convert Firestore Timestamp to DateTime
+      final durationDifference =
+          firestoreTime.difference(now); // Calculate the difference
+
+      // Define the target duration of 9 hours and 30 minutes
+      final targetDuration = Duration(hours: 9, minutes: 30);
+
+      // Check if the time difference is more than 9:30 hours away
+      bool isMoreThanNineThirtyAway = durationDifference > targetDuration;
+      bool is730 = firestoreTime.hour == 7 && firestoreTime.minute == 30;
       return (!riders.contains(user?.email) &&
           seats > 0 &&
-          state == "available");
+          state == "available" &&
+          isMoreThanNineThirtyAway &&
+          is730); // Add the new time condition
     });
     docIDS = filteredDocs.map((doc) => doc.id).toList();
+    print(docIDS);
+    print("docIDS");
   }
 
   void addUserToRoute(String docuID) async {
