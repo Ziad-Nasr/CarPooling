@@ -25,7 +25,7 @@ class _LandingState extends State<Landing> {
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection("routes").get();
     final docs = querySnapshot.docs;
-    final filteredDocs = docs.where((doc) {
+    final filteredDocs1 = docs.where((doc) {
       final riders = doc["riders"];
       final seats = doc["seats"];
       final state = doc["state"];
@@ -46,7 +46,36 @@ class _LandingState extends State<Landing> {
           isMoreThanNineThirtyAway &&
           is730); // Add the new time condition
     });
-    docIDS = filteredDocs.map((doc) => doc.id).toList();
+
+    final filteredDocs2 = docs.where((doc) {
+      final riders = doc["riders"];
+      final seats = doc["seats"];
+      final state = doc["state"];
+      final firestoreTime = (doc["test"] as Timestamp)
+          .toDate(); // Convert Firestore Timestamp to DateTime
+      final durationDifference =
+          firestoreTime.difference(now); // Calculate the difference
+
+      // Define the target duration of 9 hours and 30 minutes
+      final targetDuration = Duration(hours: 4, minutes: 30);
+
+      // Check if the time difference is more than 9:30 hours away
+      bool isMoreThanFourThirtyAway = durationDifference > targetDuration;
+      bool is530 = firestoreTime.hour == 5 && firestoreTime.minute == 15;
+      print("isMoreThanFourThirtyAway");
+      print(durationDifference);
+      print(isMoreThanFourThirtyAway);
+      print(is530);
+      print("is530");
+      return (!riders.contains(user?.email) &&
+          seats > 0 &&
+          state == "available" &&
+          isMoreThanFourThirtyAway &&
+          is530); // Add the new time condition
+    });
+    List<String> docIDs1 = filteredDocs1.map((doc) => doc.id).toList();
+    List<String> docIDs2 = filteredDocs2.map((doc) => doc.id).toList();
+    docIDS = List.from(docIDs1)..addAll(docIDs2);
     print(docIDS);
     print("docIDS");
   }
