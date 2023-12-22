@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class routeCard extends StatefulWidget {
   final String Reserve;
@@ -117,11 +118,18 @@ class _routeCardState extends State<routeCard> {
             style: TextStyle(color: Colors.grey),
           ),
           Text(
-            "Date: " + (documentData?['date']).toString(),
+            "Date: " +
+                (DateFormat('yyyy-MM-dd')
+                    .format(documentData?['time'].toDate())),
             style: TextStyle(color: Colors.grey),
           ),
           Text(
-            "Time: " + (documentData?['time']).toString(),
+            "Time: " +
+                (DateFormat('hh:mm a').format(documentData?['time'].toDate())),
+            style: TextStyle(color: Colors.grey),
+          ),
+          Text(
+            "State: " + (documentData?['state']).toString(),
             style: TextStyle(color: Colors.grey),
           ),
           Row(

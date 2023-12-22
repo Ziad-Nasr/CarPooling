@@ -61,7 +61,7 @@ class _LandingState extends State<Landing> {
 
       // Check if the time difference is more than 9:30 hours away
       bool isMoreThanFourThirtyAway = durationDifference > targetDuration;
-      bool is530 = firestoreTime.hour == 5 && firestoreTime.minute == 15;
+      bool is530 = firestoreTime.hour == 17 && firestoreTime.minute == 30;
       return (!riders.contains(user?.email) &&
           seats > 0 &&
           state == "available" &&
@@ -71,7 +71,6 @@ class _LandingState extends State<Landing> {
     List<String> docIDs1 = filteredDocs1.map((doc) => doc.id).toList();
     List<String> docIDs2 = filteredDocs2.map((doc) => doc.id).toList();
     docIDS = List.from(docIDs1)..addAll(docIDs2);
-
   }
 
   void addUserToRoute(String docuID) async {

@@ -38,11 +38,14 @@ class _cartState extends State<cart> {
     // Reference to the route document in the 'routes' collection
     DocumentReference routeDocumentReference =
         firestore.collection("routes").doc(docuID);
-
     try {
       // Get the title from the route document
       DocumentSnapshot routeSnapshot = await routeDocumentReference.get();
       var routeData = routeSnapshot.data() as Map<String, dynamic>;
+      if (routeData['state'] != "available") {
+        return;
+      }
+
       String? routeTitle = routeData['title'];
 
       if (user?.email != null && routeTitle != null) {
