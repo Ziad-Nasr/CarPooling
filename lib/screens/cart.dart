@@ -31,21 +31,55 @@ class _cartState extends State<cart> {
     }
   }
 
-  void removeUserFromRoute(String docuID) {
+  void removeUserFromRoute(String docuID) async {
     User? user = FirebaseAuth.instance.currentUser;
-    DocumentReference documentReference =
-        FirebaseFirestore.instance.collection("routes").doc(docuID);
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    documentReference.update({
-      "riders": FieldValue.arrayRemove([user?.email])
-    });
-    documentReference.update({"seats": FieldValue.increment(1)});
-    Navigator.pushReplacement<void, void>(
-      context,
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => navBar(current: 1),
-      ),
-    );
+    // Reference to the route document in the 'routes' collection
+    DocumentReference routeDocumentReference =
+        firestore.collection("routes").doc(docuID);
+
+    try {
+      // Get the title from the route document
+      DocumentSnapshot routeSnapshot = await routeDocumentReference.get();
+      var routeData = routeSnapshot.data() as Map<String, dynamic>;
+      String? routeTitle = routeData['title'];
+
+      if (user?.email != null && routeTitle != null) {
+        // Update the route document - remove the user and increment seats
+        await routeDocumentReference.update({
+          "riders": FieldValue.arrayRemove([user!.email])
+        });
+        await routeDocumentReference.update({"seats": FieldValue.increment(1)});
+
+        // Query the 'requests' collection for documents with the matching user email and title
+        QuerySnapshot requestSnapshot = await firestore
+            .collection("requests")
+            .where("user", isEqualTo: user.email)
+            .where("title", isEqualTo: routeTitle)
+            .get();
+
+        // Loop through the matching documents and delete each one
+        for (DocumentSnapshot doc in requestSnapshot.docs) {
+          await doc.reference.delete();
+          print("Deleted request with ID: ${doc.id}");
+        }
+
+        // Navigate to navBar with current set to 1
+        Navigator.pushReplacement<void, void>(
+          context,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) => navBar(current: 1),
+          ),
+        );
+      } else {
+        // Handle the case where email or title is null
+        print("Error: User email or Route title is null.");
+      }
+    } catch (e) {
+      // Handle any errors here
+      print("Error removing user from route or fetching/deleting requests: $e");
+    }
   }
 
   @override
