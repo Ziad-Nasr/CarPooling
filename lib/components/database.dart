@@ -44,10 +44,6 @@ class DatabaseHelper {
           )
           ''');
   }
-
-  // Helper methods to insert, query, update, and delete:
-
-  // Insert a profile row.
   Future<int> insert(Map<String, dynamic> row) async {
     Database db = await instance.database;
     return await db.insert(table, row);
@@ -58,7 +54,6 @@ class DatabaseHelper {
     return await db.query(table, where: '$columnEmail = ?', whereArgs: [email]);
   }
 
-  // Query all rows.
   reading(sql) async {
     Database db = await instance.database;
     return await db.rawQuery(sql);

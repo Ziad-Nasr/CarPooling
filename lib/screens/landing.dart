@@ -12,6 +12,7 @@ class Landing extends StatefulWidget {
 }
 
 class _LandingState extends State<Landing> {
+  static bool bypassFlag = false;
   void signUserOut() {
     FirebaseAuth.instance.signOut();
   }
@@ -20,7 +21,10 @@ class _LandingState extends State<Landing> {
 
   Future getDocs() async {
     DateTime now = DateTime.now();
-    print(now.hour);
+    if (bypassFlag) {
+      now = DateTime(now.year, now.month, now.day, 23, 0);
+    }
+    print(bypassFlag);
     User? user = FirebaseAuth.instance.currentUser;
     QuerySnapshot querySnapshot =
         await FirebaseFirestore.instance.collection("routes").get();
@@ -33,7 +37,8 @@ class _LandingState extends State<Landing> {
           .toDate(); // Convert Firestore Timestamp to DateTime
       final durationDifference =
           firestoreTime.difference(now); // Calculate the difference
-
+      print(doc["title"]);
+      print(durationDifference);
       // Define the target duration of 9 hours and 30 minutes
       final targetDuration = Duration(hours: 9, minutes: 30);
 
@@ -133,6 +138,31 @@ class _LandingState extends State<Landing> {
     }
   }
 
+  void bypass() async {
+    if (bypassFlag) {
+      bypassFlag = false;
+    } else {
+      bypassFlag = true;
+    }
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(bypassFlag
+              ? "Time will be set for 11:00 PM"
+              : "Time will be set for the device's time"),
+        );
+      },
+    );
+
+    Navigator.pushReplacement<void, void>(
+      context,
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) => navBar(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -140,6 +170,16 @@ class _LandingState extends State<Landing> {
         appBar: AppBar(
           title: const Text("Landing"),
           actions: [
+            ButtonBar(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    bypass();
+                  },
+                  child: const Text('Bypass'),
+                ),
+              ],
+            ),
             IconButton(onPressed: signUserOut, icon: Icon(Icons.logout))
           ],
           backgroundColor: Colors.black,
