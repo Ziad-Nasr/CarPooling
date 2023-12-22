@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:project/components/blackButtonRound.dart';
 import 'package:project/screens/history.dart';
 import 'package:project/components/database.dart';
+import 'package:project/screens/editProfile.dart';
 
 class profile extends StatefulWidget {
   const profile({super.key});
@@ -46,12 +47,18 @@ class _profileState extends State<profile> {
         DatabaseHelper.columnName: userData['name'],
         DatabaseHelper.columnLevel: userData['level'],
         DatabaseHelper.columnPhoneNumber: userData['phone'],
-        // Change 'phone' to the actual key in your userData map
+        // Ensure that the keys used here ('email', 'name', 'level', 'phone') match the keys in your userData map
       };
 
-      // Insert the user data into the SQLite database
-      final id = await mydb.insert(row);
-      print('Inserted user data to local DB with id: $id');
+      // Update the user data in the SQLite database
+      final rowsAffected = await mydb.update(row);
+      if (rowsAffected > 0) {
+        print(
+            'Updated user data in local DB for email: ${row[DatabaseHelper.columnEmail]}');
+      } else {
+        print(
+            'No record was found with email: ${row[DatabaseHelper.columnEmail]} to update.');
+      }
     } catch (e) {
       print('Error saving user data to local DB: $e');
     }
@@ -71,21 +78,16 @@ class _profileState extends State<profile> {
       if (querySnapshot.docs.isNotEmpty) {
         // Return the first document found (should be the only one due to the query)
         setState(() {
-          print("querySnapshot.docs.first.data()");
-          print(querySnapshot.docs.first.data());
-          print("querySnapshot.docs.first.data()");
-
           userDataCloud = querySnapshot.docs.first.data();
         });
         saveUserDataToLocalDB(userDataCloud);
       } else {
-        print(user?.email);
-        print(email);
         print("Non Found");
         // No documents found
       }
     } catch (e) {
       // Handle any errors here
+      print("error");
       print(e);
     }
     fetchUserDataFromLocalDB(user!.email!);
@@ -176,8 +178,8 @@ class _profileState extends State<profile> {
                                   4), // Rounded corner radius
                             ),
                             child: Text(
-                              userData[DatabaseHelper
-                                  .columnEmail], // Replace with the default text if user?.email is null
+                              userData[DatabaseHelper.columnEmail] ??
+                                  "Non", // Replace with the default text if user?.email is null
                               style: TextStyle(
                                 color: Colors.black, // Text color
                                 fontSize: 16, // Font size
@@ -218,8 +220,8 @@ class _profileState extends State<profile> {
                                   4), // Rounded corner radius
                             ),
                             child: Text(
-                              userData[DatabaseHelper
-                                  .columnName], // Replace with the default text if user?.email is null
+                              userData[DatabaseHelper.columnPhoneNumber] ??
+                                  "Non", // Replace with the default text if user?.email is null
                               style: TextStyle(
                                 color: Colors.black, // Text color
                                 fontSize: 16, // Font size
@@ -260,8 +262,8 @@ class _profileState extends State<profile> {
                                   4), // Rounded corner radius
                             ),
                             child: Text(
-                              userData[
-                                  "level"], // Replace with the default text if user?.email is null
+                              userData["level"] ??
+                                  "Non", // Replace with the default text if user?.email is null
                               style: TextStyle(
                                 color: Colors.black, // Text color
                                 fontSize: 16, // Font size
@@ -272,7 +274,16 @@ class _profileState extends State<profile> {
                       ),
                     ),
                     SizedBox(height: 24),
-                    blackButtonRound(text: "Update Profile", onPressed: () {})
+                    blackButtonRound(
+                        text: "Update Profile",
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => editProfile(),
+                            ),
+                          );
+                        })
                   ],
                 ),
               ),

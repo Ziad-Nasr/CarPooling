@@ -23,7 +23,7 @@ class _cartState extends State<cart> {
     final filteredDocs = docs.where((doc) {
       final riders = doc["riders"];
       final state = doc["state"];
-      return (riders.contains(user?.email) && state != "complete");
+      return (riders.contains(user?.email) && state != "completed");
     });
     docIDS = filteredDocs.map((doc) => doc.id).toList();
     if (mounted) {

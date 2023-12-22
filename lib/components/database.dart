@@ -64,18 +64,12 @@ class DatabaseHelper {
     return await db.rawQuery(sql);
   }
 
-  // Update a profile row.
-  updating(sql) async {
+  Future<int> update(Map<String, dynamic> row) async {
     Database db = await instance.database;
-    return await db.rawUpdate(sql);
+    String email = row[DatabaseHelper.columnEmail];
+    return await db.update(DatabaseHelper.table, row,
+        where: '${DatabaseHelper.columnEmail} = ?', whereArgs: [email]);
   }
-
-  // Future<int> update(Map<String, dynamic> row) async {
-  //   Database db = await instance.database;
-  //   String email = row[columnEmail];
-  //   return await db
-  //       .update(table, row, where: '$columnEmail = ?', whereArgs: [email]);
-  // }
 
   // Delete a profile row.
   Future<int> delete(String email) async {
